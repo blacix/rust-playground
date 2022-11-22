@@ -1,0 +1,43 @@
+Windows with msvc
+
+VsCode has the recommended rust-analyzer extension installed.
+Your project folder was initialized with cargo init. (Your project's folder name must be the same as the name of your package in Cargo.toml.)
+You can cargo run from within your project directory and it works.
+As indicated by various locations on the 'Net, you need to install another VsCode extension to make it so you can debug. Since you're on Windows, you want to use the MS C++ DevTools extension for VsCode, instead of the CodeLLDB one.
+
+Next, you need a "launch" configuration setup. Select VsCode's Run >>> Add Configuration... menu item. Choose the C/C++: (Windows) launch option in the drop-down. You'll now have a launch.json file with a single configuration object.
+
+You'll need to change the program property to "${workspaceFolder}/target/debug/${workspaceFolderBasename}.exe"; this depends on your package name being the same as the project folder's name. (I also changed the cwd property to "${workspaceFolder}", though I'm not sure it matters.) To be clearer, here's the configuration I have presently in my launch.json file (the preLaunchTask property is for later):
+
+{
+    "name": "(Windows) Launch",
+    "type": "cppvsdbg",
+    "request": "launch",
+    "program": "${workspaceFolder}/target/debug/${workspaceFolderBasename}.exe",
+    "preLaunchTask": "rust: cargo build",
+    "args": [],
+    "stopAtEntry": false,
+    "cwd": "${workspaceFolder}",
+    "environment": [],
+    "console": "externalTerminal"
+}
+
+
+If you want F5 to also save your changes and rebuild your project before debugging, then you also have to add a build task and configure it to run before debugging starts.
+
+To do that, add the build task by opening the Show All Commands box (either F1 or Ctrl+Shift+p) and choosing Tasks: Configure Task. Select rust: cargo build. It'll create a tasks.json file next to your launch.json; the defaults are all you need. My file looks like this:
+
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cargo",
+            "command": "build",
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build",
+            "label": "rust: cargo build"
+        }
+    ]
+}
