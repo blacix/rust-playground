@@ -17,7 +17,7 @@ fn main() {
     while true {
         if let Ok(read_len) = port.read(serial_buf.as_mut_slice()) {
             println!("len: {}", read_len);
-            let s = String::from_utf8_lossy(&serial_buf);
+            let s = String::from_utf8_lossy(&serial_buf[0..read_len]);
             println!("data: {}", s.to_string());
         }
         thread::sleep(Duration::from_millis(10));
