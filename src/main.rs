@@ -17,7 +17,7 @@ fn parse_v2(data: Vec<u8>) -> String {
 }
 
 fn parse_v3(data: Vec<u8>) -> String {
-    let parsed_string = String::from_utf8(data).unwrap_or("could nor parse data".to_string());
+    let parsed_string = String::from_utf8(data).unwrap_or("could not parse data".to_string());
     return parsed_string;
 }
 
@@ -43,15 +43,30 @@ fn thread_function(mut port: Box<dyn SerialPort> ) {
 
 fn main() {
     let ports = serialport::available_ports().expect("No ports found!");
-    let port_count = ports.len();
-    println!("found {} ports", port_count);
-    for p in ports {
-        println!("{}", p.port_name);
+    let mut cnt = 1;
+    for p in &ports {
+        println!("{} - {}", cnt, p.port_name);
+        cnt += 1;
     }
 
-    let port = serialport::new("COM14", 115200)
+    println!("pick a port:");
+
+    let mut user_input = String::new();
+    std::io::stdin().read_line(&mut user_input).expect("cannot read input");
+    let port_index = match user_input.trim().parse::<usize>() {
+        Ok(i)  => i,
+        Err(e) => panic!("Problem parsing data: {:?}", e.to_string())
+    };
+
+    let selected_port_info = &ports[port_index];
+    println!("selected port: {}", selected_port_info.port_name.to_string());
+
+    let port = serialport::new(selected_port_info.port_name.to_string(), 115200)
     .timeout(Duration::from_millis(10))
     .open().expect("Failed to open port");
+
+    println!("port {} open", selected_port_info.port_name.to_string());
+
 
     let handle = thread::spawn(|| {
         thread_function(port);
