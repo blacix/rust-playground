@@ -21,18 +21,7 @@ fn parse_v3(data: Vec<u8>) -> String {
     return parsed_string;
 }
 
-fn main() {
-    let ports = serialport::available_ports().expect("No ports found!");
-    let port_count = ports.len();
-    println!("found {} ports", port_count);
-    for p in ports {
-        println!("{}", p.port_name);
-    }
-
-    let mut port = serialport::new("COM14", 115200)
-    .timeout(Duration::from_millis(10))
-    .open().expect("Failed to open port");
-
+fn thread_function(mut port: Box<dyn SerialPort> ) {
     let mut serial_buf: Vec<u8> = vec![0; 32];
     while true {
         // let read_len = port.read(serial_buf.as_mut_slice()).unwrap_or(0);
@@ -50,4 +39,23 @@ fn main() {
 
         thread::sleep(Duration::from_millis(10));
     }
+}
+
+fn main() {
+    let ports = serialport::available_ports().expect("No ports found!");
+    let port_count = ports.len();
+    println!("found {} ports", port_count);
+    for p in ports {
+        println!("{}", p.port_name);
+    }
+
+    let port = serialport::new("COM14", 115200)
+    .timeout(Duration::from_millis(10))
+    .open().expect("Failed to open port");
+
+    let handle = thread::spawn(|| {
+        thread_function(port);
+    });
+
+    handle.join().unwrap();
 }
