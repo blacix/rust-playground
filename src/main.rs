@@ -74,15 +74,13 @@ fn main() {
             if i > 0 && i <= port_count {
                 i - 1
             } else {
-                panic!("Invalid port selected: {}", user_input.trim());
+                panic!("Invalid port selected: {}", user_input.trim())
             }
         },
         Err(e) => panic!("Problem parsing data: {:?}", e.to_string())
     };
-    
-    let selected_port_info = ports.get(port_index).unwrap();
-    println!("selected port: {}", selected_port_info.port_name.to_string());
 
+    let selected_port_info = ports.get(port_index).unwrap();
 
     // open selected serial port
     let port = serialport::new(selected_port_info.port_name.to_string(), 115200)
