@@ -29,7 +29,7 @@ fn bytes_to_string(data: Vec<u8>) -> String {
     return parsed_string;
 }
 
-fn serial_thread_function(mut port: Box<dyn SerialPort>, receiver: Receiver<ThreadMessage> ) {
+fn serial_thread_function(mut port: Box<dyn SerialPort>, channel: Receiver<ThreadMessage> ) {
     let mut serial_buf: Vec<u8> = vec![0; 32];
     let mut running = true;
     while running {
@@ -39,7 +39,7 @@ fn serial_thread_function(mut port: Box<dyn SerialPort>, receiver: Receiver<Thre
             print!("{string_read}");
         }
 
-        let message_received = receiver.try_recv().unwrap_or(ThreadMessage::NoOp);
+        let message_received = channel.try_recv().unwrap_or(ThreadMessage::NoOp);
         if matches!(message_received, ThreadMessage::Exit) {
             running = false;
         } else {
@@ -84,13 +84,13 @@ fn main() {
 
 
     // starting thread to read serial port
-    let (sender, receiver) = channel();
-    let handle = thread::spawn(|| {
-        serial_thread_function(port, receiver);
+    let (channel_main_thread, channel_serial_therad) = channel();
+    let serial_thread_handle = thread::spawn(|| {
+        serial_thread_function(port, channel_serial_therad);
     });
 
     // reading user input
     std::io::stdin().read_line(&mut user_input).expect("cannot read input");
-    sender.send(ThreadMessage::Exit).unwrap();
-    handle.join().unwrap();
+    channel_main_thread.send(ThreadMessage::Exit).unwrap();
+    serial_thread_handle.join().unwrap();
 }
