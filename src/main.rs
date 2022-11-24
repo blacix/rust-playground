@@ -9,6 +9,9 @@ enum ThreadMessage {
     Exit,
 }
 
+const SERIAL_THREAD_SLEEP_MS: u64 = 10;
+const SERIAL_BUFFER_SIZE: usize = 128;
+
 // fn bytes_to_string_v2(data: Vec<u8>) -> String {
 //     let parsed_string = String::from_utf8_lossy(&data);
 //     return parsed_string.to_string();
@@ -30,8 +33,9 @@ fn bytes_to_string(data: Vec<u8>) -> String {
 }
 
 fn serial_thread_function(mut port: Box<dyn SerialPort>, channel: Receiver<ThreadMessage> ) {
-    let mut serial_buf: Vec<u8> = vec![0; 32];
+    let mut serial_buf: Vec<u8> = vec![0; SERIAL_BUFFER_SIZE];
     let mut running = true;
+
     while running {
         if let Ok(read_len) = port.read(serial_buf.as_mut_slice()) {
             // println!("len: {}", read_len);
@@ -43,7 +47,7 @@ fn serial_thread_function(mut port: Box<dyn SerialPort>, channel: Receiver<Threa
         if matches!(message_received, ThreadMessage::Exit) {
             running = false;
         } else {
-            thread::sleep(Duration::from_millis(10));
+            thread::sleep(Duration::from_millis(SERIAL_THREAD_SLEEP_MS));
         }
     }
 }
@@ -85,7 +89,8 @@ fn main() {
 
     // starting thread to read serial port
     let (channel_main_thread, channel_serial_therad) = channel();
-    let serial_thread_handle = thread::spawn(|| {
+    // TODO move or not move?
+    let serial_thread_handle = thread::spawn(move || {
         serial_thread_function(port, channel_serial_therad);
     });
 
