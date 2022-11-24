@@ -55,12 +55,12 @@ fn serial_thread_function(mut port: Box<dyn SerialPort>, channel: Receiver<Threa
 fn main() {
     // list available ports
     let ports = serialport::available_ports().expect("No ports found!");
-    let mut cnt = 1;
+    let mut port_count = 0;
     // reference must be used on ports because iterator changes the collection
     // and ports.get won't compile
     for p in &ports {
-        println!("{} - {}", cnt, p.port_name);
-        cnt += 1;
+        port_count += 1;
+        println!("{} - {}", port_count, p.port_name);
     }
 
 
@@ -70,7 +70,13 @@ fn main() {
     let mut user_input = String::new();
     std::io::stdin().read_line(&mut user_input).expect("cannot read input");
     let port_index = match user_input.trim().parse::<usize>() {
-        Ok(i)  => i - 1,
+        Ok(i)  => {
+            if i > 0 && i <= port_count {
+                i - 1
+            } else {
+                panic!("Invalid port selected: {}", user_input.trim());
+            }
+        },
         Err(e) => panic!("Problem parsing data: {:?}", e.to_string())
     };
     
