@@ -99,6 +99,8 @@ fn main() {
 
     let mut user_input = String::new();
     std::io::stdin().read_line(&mut user_input).expect("cannot read input");
+    // parse template param can be omitted if variable type is explicitly declared
+    // let port_index: usize = user_input.trim().parse::<usize>().expect("type a number between 1< ");
     let port_index = match user_input.trim().parse::<usize>() {
         Ok(i)  => {
             if i > 0 && i <= port_count {
