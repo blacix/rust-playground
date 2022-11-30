@@ -85,12 +85,10 @@ fn main() {
     compare_stuff();
     // list available ports
     let ports = serialport::available_ports().expect("No ports found!");
-    let mut port_count = 0;
     // reference must be used on ports because iterator changes the collection
     // and ports.get won't compile
-    for p in &ports {
-        port_count += 1;
-        println!("{} - {}", port_count, p.port_name);
+    for (i, p) in ports.iter().enumerate() {
+        println!("{} - {}", i + 1, p.port_name);
     }
 
 
@@ -103,7 +101,7 @@ fn main() {
     // let port_index: usize = user_input.trim().parse::<usize>().expect("type a number between 1< ");
     let port_index = match user_input.trim().parse::<usize>() {
         Ok(i)  => {
-            if i > 0 && i <= port_count {
+            if i > 0 && i <= ports.len() {
                 i - 1
             } else {
                 panic!("Invalid port selected: {}", user_input.trim())
