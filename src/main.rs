@@ -1,7 +1,7 @@
 use std::time::Duration;
 use std::thread;
 use std::sync::mpsc::{channel, Sender, Receiver};
-use serialport::SerialPort;
+use serialport;
 
 mod serial_io;
 
@@ -37,10 +37,18 @@ fn main() {
     };
 
     let selected_port_info = ports.get(port_index).unwrap();
-
+    // TODO config from user input
+    let baud_rate = 115200;
+    let flow_control = serialport::FlowControl::None;
+    let parity = serialport::Parity::None;
+    let data_bits = serialport::DataBits::Eight;
+    
     // open selected serial port
-    let port = serialport::new(selected_port_info.port_name.to_string(), 115200)
+    let port = serialport::new(selected_port_info.port_name.to_string(), baud_rate)
     .timeout(Duration::from_millis(10))
+    .flow_control(flow_control)
+    .parity(parity)
+    .data_bits(data_bits)
     .open().expect("Failed to open port");
 
     println!("port {} open", selected_port_info.port_name.to_string());
