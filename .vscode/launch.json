@@ -17,6 +17,16 @@
         //"console": "externalTerminal"
         "console": "integratedTerminal"
 
+    },
+    {
+        "name": "(linux) Launch",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceRoot}/target/debug/${workspaceFolderBasename}",
+        "preLaunchTask": "rust: cargo build",
+        "args": [],
+        "cwd": "${workspaceRoot}",
+        "console": "integratedTerminal"
     }
     ]
 }
