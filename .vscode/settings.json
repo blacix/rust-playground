@@ -1,0 +1,11 @@
+{
+  // terminal settings for rust-qt
+  // starts vs terminal with vc2017 toolchain ( version 14.16.27023)
+    // "terminal.integrated.profiles.windows": {
+    //     "VS_CMD_14.16.27023": {
+    //       "path": "C:\\WINDOWS\\System32\\cmd.exe",
+    //       "args": ["/K", "c:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\VsDevCmd.bat", "-vcvars_ver=14.16.27023"]
+    //     }
+    //   },
+//      "terminal.integrated.defaultProfile.windows": "Command Prompt"
+}
