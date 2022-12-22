@@ -25,6 +25,7 @@ async fn query_device(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
 async fn query_all_device_properties(adapter: &Adapter, addr: Address) -> bluer::Result<()> {
     let device = adapter.device(addr)?;
     let props = device.all_properties().await?;
+    println!("Device properties");
     for prop in props {
         println!("    {:?}", &prop);
     }
